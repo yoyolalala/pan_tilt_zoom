@@ -154,6 +154,72 @@ void Oled::IIC_Stop()
 	IIC_delay();
 	SDA_1;
 }
+void Oled::OLED_Init(void)
+{
+
+	//delay(500);//初始化前的延时很重要
+	IIC_delay();
+
+	OLED_WrCmd(0xae);//--turn off oled panel
+	IIC_delay();
+	OLED_WrCmd(0x00);//---set low column address
+	IIC_delay();
+	OLED_WrCmd(0x10);//---set high column address
+	IIC_delay();
+	OLED_WrCmd(0x40);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
+	IIC_delay();
+	OLED_WrCmd(0x81);//--set contrast control register
+	IIC_delay();
+	OLED_WrCmd(Brightness); // Set SEG Output Current Brightness
+	IIC_delay();
+	OLED_WrCmd(0xa1);//--Set SEG/Column Mapping     0xa0×ó??·??? 0xa1????
+	IIC_delay();
+	OLED_WrCmd(0xc8);//Set COM/Row Scan Direction   0xc0????·??? 0xc8????
+	IIC_delay();
+	OLED_WrCmd(0xa6);//--set normal display
+	IIC_delay();
+	OLED_WrCmd(0xa8);//--set multiplex ratio(1 to 64)
+	IIC_delay();
+	OLED_WrCmd(0x3f);//--1/64 duty
+	IIC_delay();
+	OLED_WrCmd(0xd3);//-set display offset	Shift Mapping RAM Counter (0x00~0x3F)
+	IIC_delay();
+	OLED_WrCmd(0x00);//-not offset
+	IIC_delay();
+	OLED_WrCmd(0xd5);//--set display clock divide ratio/oscillator frequency
+	IIC_delay();
+	OLED_WrCmd(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec
+	IIC_delay();
+	OLED_WrCmd(0xd9);//--set pre-charge period
+	IIC_delay();
+	OLED_WrCmd(0xf1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
+	IIC_delay();
+	OLED_WrCmd(0xda);//--set com pins hardware configuration
+	IIC_delay();
+	OLED_WrCmd(0x12);
+	IIC_delay();
+	OLED_WrCmd(0xdb);//--set vcomh
+	IIC_delay();
+	OLED_WrCmd(0x40);//Set VCOM Deselect Level
+	IIC_delay();
+	OLED_WrCmd(0x20);//-Set Page Addressing Mode (0x00/0x01/0x02)
+	IIC_delay();
+	OLED_WrCmd(0x02);//
+	IIC_delay();
+	OLED_WrCmd(0x8d);//--set Charge Pump enable/disable
+	IIC_delay();
+	OLED_WrCmd(0x14);//--set(0x10) disable
+	IIC_delay();
+	OLED_WrCmd(0xa4);// Disable Entire Display On (0xa4/0xa5)
+	IIC_delay();
+	OLED_WrCmd(0xa6);// Disable Inverse Display On (0xa6/a7) 
+	IIC_delay();
+	OLED_WrCmd(0xaf);//--turn on oled panel
+	IIC_delay();
+	OLED_Fill(0x00); //????????
+	IIC_delay();
+	OLED_Set_Pos(0, 0);
+}
 void Oled::Write_IIC_Byte(unsigned char IIC_Byte)
 {
 	unsigned char i;
@@ -222,72 +288,6 @@ void Oled::OLED_CLS(void)
 		for (x = 0; x < X_WIDTH; x++)
 			OLED_WrDat(0);
 	}
-}
-void Oled::OLED_Init(void)
-{
-
-	//delay(500);//初始化前的延时很重要
-	IIC_delay();
-
-	OLED_WrCmd(0xae);//--turn off oled panel
-	IIC_delay();
-	OLED_WrCmd(0x00);//---set low column address
-	IIC_delay();
-	OLED_WrCmd(0x10);//---set high column address
-	IIC_delay();
-	OLED_WrCmd(0x40);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
-	IIC_delay();
-	OLED_WrCmd(0x81);//--set contrast control register
-	IIC_delay();
-	OLED_WrCmd(Brightness); // Set SEG Output Current Brightness
-	IIC_delay();
-	OLED_WrCmd(0xa1);//--Set SEG/Column Mapping     0xa0×ó??·??? 0xa1????
-	IIC_delay();
-	OLED_WrCmd(0xc8);//Set COM/Row Scan Direction   0xc0????·??? 0xc8????
-	IIC_delay();
-	OLED_WrCmd(0xa6);//--set normal display
-	IIC_delay();
-	OLED_WrCmd(0xa8);//--set multiplex ratio(1 to 64)
-	IIC_delay();
-	OLED_WrCmd(0x3f);//--1/64 duty
-	IIC_delay();
-	OLED_WrCmd(0xd3);//-set display offset	Shift Mapping RAM Counter (0x00~0x3F)
-	IIC_delay();
-	OLED_WrCmd(0x00);//-not offset
-	IIC_delay();
-	OLED_WrCmd(0xd5);//--set display clock divide ratio/oscillator frequency
-	IIC_delay();
-	OLED_WrCmd(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec
-	IIC_delay();
-	OLED_WrCmd(0xd9);//--set pre-charge period
-	IIC_delay();
-	OLED_WrCmd(0xf1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
-	IIC_delay();
-	OLED_WrCmd(0xda);//--set com pins hardware configuration
-	IIC_delay();
-	OLED_WrCmd(0x12);
-	IIC_delay();
-	OLED_WrCmd(0xdb);//--set vcomh
-	IIC_delay();
-	OLED_WrCmd(0x40);//Set VCOM Deselect Level
-	IIC_delay();
-	OLED_WrCmd(0x20);//-Set Page Addressing Mode (0x00/0x01/0x02)
-	IIC_delay();
-	OLED_WrCmd(0x02);//
-	IIC_delay();
-	OLED_WrCmd(0x8d);//--set Charge Pump enable/disable
-	IIC_delay();
-	OLED_WrCmd(0x14);//--set(0x10) disable
-	IIC_delay();
-	OLED_WrCmd(0xa4);// Disable Entire Display On (0xa4/0xa5)
-	IIC_delay();
-	OLED_WrCmd(0xa6);// Disable Inverse Display On (0xa6/a7) 
-	IIC_delay();
-	OLED_WrCmd(0xaf);//--turn on oled panel
-	IIC_delay();
-	OLED_Fill(0x00); //????????
-	IIC_delay();
-	OLED_Set_Pos(0, 0);
 }
 void Oled::disnum(unsigned int num, unsigned char x, unsigned char y)
 {

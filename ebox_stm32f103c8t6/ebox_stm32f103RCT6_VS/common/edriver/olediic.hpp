@@ -19,22 +19,22 @@ class Oled
 	void scl_0();
 	void sda_0();
 	void sda_1();
+	void IIC_delay();
+	void IIC_Start();
+	void IIC_Stop();
 public:
 	Oled(Gpio *scl, Gpio *sda) :
 		SCL(scl),SDA(sda)
 	{
 
 	}
-	void IIC_delay();
-	void IIC_Start();
-	void IIC_Stop();
+	void OLED_Init(void);
 	void Write_IIC_Byte(unsigned char IIC_Byte);//写一个字节
 	void OLED_WrDat(unsigned char IIC_Data);//写数据
 	void OLED_WrCmd(unsigned char IIC_Command);//写命令
 	void OLED_Set_Pos(unsigned char x, unsigned char y);//设置坐标
 	void OLED_Fill(unsigned char bmp_dat);//oled全屏
 	void OLED_CLS(void);//复位
-	void OLED_Init(void);
 	void disnum(unsigned int num, unsigned char x, unsigned char y);//显示五个数字的数字串
 	void OLED_P6x8Str(unsigned char x, unsigned char y, char ch[]);//显示6*8一组标准ASCII字符串 坐标(x,y) y为页范围0~7
 	void disfloat_num(unsigned char x, unsigned char y, float num);//浮点型数据显示 只显示十位开始到小数点后3位
