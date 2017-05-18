@@ -3,20 +3,28 @@
 #include "ebox.h"
 #include "servo.h"
 #include "pid.hpp"
-#define roll 1 
-#define pitch 2//暂时用作表示九轴读得数据
+#include "uart_num.h"
+UartNum uartNum(&uart1);
 class Ptz
-{
+{   
 	greg::PID pitchPID,rollPID;
-	I2c *i2c;
 	Servo servoPitch,servoRoll;
 	float refreshInt;
-	//单独对舵机两个角度的PID进行refresh，包括目标角度的设置
+	void getData()
+	{
+		uartNum.begin(115200);
+		for (int i = 0; i < uartNum.recievedNum; i++)
+		{
+			roll = uartNum.numsBuf[2];
+			pitch = uartNum.numsBuf[1];
+		}
+	}
+	//单独对舵机两个角度的PID进行refresh，包括相机姿态的读取
 	void refreshPID()
 	{
-		float pitchPercent = 0, rollPercent=0;
+		float pitchPercent = 50, rollPercent=50;
 		//获取mpu返回的roll和pitch值
-		
+		this->getData();
 
 		//计算两个PID的输出，设置+-以改变控制方向
 		pitchPercent -= pitchPID.refresh(pitch);
@@ -34,9 +42,11 @@ class Ptz
 		pitchPID.setDesiredPoint(50);
 		rollPID.setDesiredPoint(50);
 	}
+
 public:
-	Ptz(Gpio *servoPitchx, Gpio *servoRollx, I2c *i2cx, float refreshInterval) :
-		servoPitch(servoPitchx),servoRoll(servoRollx),refreshInt(refreshInterval),i2c(i2cx)
+	float roll, pitch;
+	Ptz(Gpio *servoPitchx, Gpio *servoRollx, float refreshInterval) :
+		servoPitch(servoPitchx),servoRoll(servoRollx),refreshInt(refreshInterval),roll(0),pitch(0)
 	{
 
 	}
@@ -45,7 +55,7 @@ public:
 		servoPitch.begin();
 		servoRoll.begin();
 		pitchPID.setRefreshInterval(refreshInt);
-		pitchPID.setWeights(0, 0, 0);
+		pitchPID.setWeights(8, 0, 0);
 		pitchPID.setOutputLowerLimit(-50);
 		pitchPID.setOutputUpperLimit(50);
 		pitchPID.setDesiredPoint(50);
@@ -59,8 +69,7 @@ public:
 	void refresh()
 	{   
 		//刷新mpu读数
-
-
+		this->getData();
 		//刷新PID
 		this->refreshPID();
 	}

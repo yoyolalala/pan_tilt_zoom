@@ -656,6 +656,9 @@
     <ClCompile Include="common\edriver\olediic.cpp">
       <Filter>Source files\common\edriver</Filter>
     </ClCompile>
+    <ClCompile Include="common\edriver\uart_string.cpp">
+      <Filter>Source files\common\edriver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\bigiot\bigiot.h">
@@ -1244,6 +1247,12 @@
       <Filter>Header files\common\edriver</Filter>
     </ClInclude>
     <ClInclude Include="common\edriver\PID.hpp">
+      <Filter>Header files\common\edriver</Filter>
+    </ClInclude>
+    <ClInclude Include="common\edriver\uart_num.h">
+      <Filter>Header files\common\edriver</Filter>
+    </ClInclude>
+    <ClInclude Include="common\edriver\uart_string.h">
       <Filter>Header files\common\edriver</Filter>
     </ClInclude>
   </ItemGroup>
