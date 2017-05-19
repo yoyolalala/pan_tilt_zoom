@@ -12,11 +12,17 @@ class Ptz
 	float refreshInt;
 	void getData()
 	{
-		uartNum.begin(115200);
+		uartNum.begin(500000);
 		for (int i = 0; i < uartNum.recievedNum; i++)
 		{
-			roll = uartNum.numsBuf[2];
-			pitch = uartNum.numsBuf[1];
+			if (i%uartNum.recievedNum == 1)
+			{
+				pitch = uartNum.numsBuf[i];//1
+			}
+			if (i%uartNum.recievedNum == 2)
+			{
+				roll = uartNum.numsBuf[i];//2
+			}
 		}
 	}
 	//单独对舵机两个角度的PID进行refresh，包括相机姿态的读取
@@ -39,10 +45,9 @@ class Ptz
 	{
 		pitchPID.reset();
 		rollPID.reset();
-		pitchPID.setDesiredPoint(50);
-		rollPID.setDesiredPoint(50);
+		pitchPID.setDesiredPoint(87.33);
+		rollPID.setDesiredPoint(18.33);
 	}
-
 public:
 	float roll, pitch;
 	Ptz(Gpio *servoPitchx, Gpio *servoRollx, float refreshInterval) :
@@ -55,16 +60,21 @@ public:
 		servoPitch.begin();
 		servoRoll.begin();
 		pitchPID.setRefreshInterval(refreshInt);
-		pitchPID.setWeights(8, 0, 0);
+		pitchPID.setWeights(1, 0, 0);
 		pitchPID.setOutputLowerLimit(-50);
 		pitchPID.setOutputUpperLimit(50);
-		pitchPID.setDesiredPoint(50);
+		pitchPID.setDesiredPoint(87.33);
 
 		rollPID.setRefreshInterval(refreshInt);
 		rollPID.setWeights(0, 0, 0);
 		rollPID.setOutputLowerLimit(-50);
 		rollPID.setOutputUpperLimit(50);
-		rollPID.setDesiredPoint(50);
+		rollPID.setDesiredPoint(18.33);
+	}
+	void showData()
+	{
+		this->getData();
+		uartNum.printf("%f,%f", roll,pitch);
 	}
 	void refresh()
 	{   

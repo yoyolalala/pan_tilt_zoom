@@ -3,8 +3,8 @@
 #include "olediic.hpp"
 #include "PTZ.h"
 #define PID_REFRESH_INTERVAL 0.01
-Ptz ptz(&PA9,&PA6,PID_REFRESH_INTERVAL);
-Oled oled(&PB6, &PB7);
+Ptz ptz(&PA9, &PA6, PID_REFRESH_INTERVAL);
+Oled oled(&PB6, &PB7);//scl sda
 Led led(&PC13,1);
 void setup()
 {
@@ -19,9 +19,10 @@ void setup()
 void main()
 {
 	setup();
-	oled.OLED_printf(0, 0, "roll=%f,pitch=%f", ptz.roll, ptz.pitch);
 	while(1)
 	{ 
+		oled.OLED_printf(0, 0, "roll=%f", ptz.roll);
+	    oled.OLED_printf(2, 2, "pitch=%f",ptz.pitch);
 		ptz.refresh();
 		led.toggle();
 		delay_ms(10);
