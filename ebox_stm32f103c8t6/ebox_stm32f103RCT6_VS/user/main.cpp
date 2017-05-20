@@ -3,7 +3,7 @@
 #include "olediic.hpp"
 #include "PTZ.h"
 #define PID_REFRESH_INTERVAL 0.01
-Ptz ptz(&PA9, &PA6, PID_REFRESH_INTERVAL);
+Ptz ptz(&PB8, &PA6, PID_REFRESH_INTERVAL);
 Oled oled(&PB6, &PB7);//scl sda
 Led led(&PC13,1);
 void setup()

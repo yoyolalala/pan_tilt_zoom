@@ -4,6 +4,7 @@
 #include "servo.h"
 #include "pid.hpp"
 #include "uart_num.h"
+#include "math.h"
 UartNum uartNum(&uart1);
 class Ptz
 {   
@@ -17,18 +18,18 @@ class Ptz
 		{
 			if (i%uartNum.recievedNum == 1)
 			{
-				pitch = uartNum.numsBuf[i];//1
+				pitch =uartNum.numsBuf[i];//1
 			}
 			if (i%uartNum.recievedNum == 2)
 			{
-				roll = uartNum.numsBuf[i];//2
+				roll =uartNum.numsBuf[i];//2
 			}
 		}
 	}
 	//单独对舵机两个角度的PID进行refresh，包括相机姿态的读取
 	void refreshPID()
 	{
-		float pitchPercent = 50, rollPercent=50;
+		float pitchPercent = 40, rollPercent=40;
 		//获取mpu返回的roll和pitch值
 		this->getData();
 
@@ -40,18 +41,18 @@ class Ptz
 		servoPitch.setPct(pitchPercent);
 		servoRoll.setPct(rollPercent);
 	}
-	//重置PID累计值
-	void resetPID()
-	{
-		pitchPID.reset();
-		rollPID.reset();
-		pitchPID.setDesiredPoint(87.33);
-		rollPID.setDesiredPoint(18.33);
-	}
+	//重置PID累计值 暂时用不到 先注释掉
+	//void resetPID()
+	//{
+	//	pitchPID.reset();
+	//	rollPID.reset();
+	//	pitchPID.setDesiredPoint(6.33);
+	//	rollPID.setDesiredPoint(18.33);
+	//}
 public:
 	float roll, pitch;
 	Ptz(Gpio *servoPitchx, Gpio *servoRollx, float refreshInterval) :
-		servoPitch(servoPitchx),servoRoll(servoRollx),refreshInt(refreshInterval),roll(0),pitch(0)
+		servoPitch(servoPitchx,200,0.7,2.4),servoRoll(servoRollx),refreshInt(refreshInterval),roll(0),pitch(0)
 	{
 
 	}
@@ -60,15 +61,15 @@ public:
 		servoPitch.begin();
 		servoRoll.begin();
 		pitchPID.setRefreshInterval(refreshInt);
-		pitchPID.setWeights(1, 0, 0);
-		pitchPID.setOutputLowerLimit(-50);
-		pitchPID.setOutputUpperLimit(50);
-		pitchPID.setDesiredPoint(87.33);
+		pitchPID.setWeights(0.8, 1.5, 0);
+		pitchPID.setOutputLowerLimit(0);
+		pitchPID.setOutputUpperLimit(100);
+		pitchPID.setDesiredPoint(6.33);
 
 		rollPID.setRefreshInterval(refreshInt);
 		rollPID.setWeights(0, 0, 0);
-		rollPID.setOutputLowerLimit(-50);
-		rollPID.setOutputUpperLimit(50);
+		rollPID.setOutputLowerLimit(0);
+		rollPID.setOutputUpperLimit(100);
 		rollPID.setDesiredPoint(18.33);
 	}
 	void showData()
@@ -81,7 +82,7 @@ public:
 		//刷新mpu读数
 		this->getData();
 		//刷新PID
-		this->refreshPID();
+		this->refreshPID(); 
 	}
 };
 #endif

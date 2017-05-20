@@ -1,28 +1,23 @@
 #include "servo.h"
 
-Servo::Servo(Gpio *signal) :
-	pwm(signal), frq(50)
+Servo::Servo(Gpio* pin, uint32_t frequency /*= 50*/, float limLowMs /*= 0.6*/, float limHighMs /*= 2.4*/) :
+	pwm(pin)
 {
-
+	//为保证一个周期足以容纳2.4ms的高电平时间，周期认为至少2.5ms，即频率最多400Hz
+	limit(frequency, (uint32_t)50, (uint32_t)400);
+	frq = frequency;
+	float T = 1.0 / frequency * 1000;//周期，以ms为单位
+	limLow = limLowMs / T * 1000;
+	limHigh = limHighMs / T * 1000;
 }
 
 void Servo::begin()
 {
-	pwm.begin(50, 75);
-	pwm.set_oc_polarity(1);
+	pwm.begin(frq, 0);
 }
 
-void Servo::setFrq(uint32_t frq)
+void Servo::setPct(float percent)
 {
-	pwm.set_frq(frq);
-}
-
-void Servo::setPct(float percent) //2.5%(975)到12.5%(875)
-{
-	uint16_t pct = percent + 875;
-	if (pct >= lowLimit || pct <= highLimit)
-		pwm.set_duty(pct);
-	else if (pct < lowLimit)
-		pwm.set_duty(lowLimit);
-	else pwm.set_duty(highLimit);
+	limit(percent, 0.f, 100.f);
+	pwm.set_duty(percent*(limHigh - limLow) / 100 + limLow);
 }
